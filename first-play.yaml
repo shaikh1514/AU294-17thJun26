@@ -1,0 +1,16 @@
+---
+  - name: creating my first play
+    hosts: servera serverb
+    tasks:
+      - name: downloading httpd packge
+        ansible.builtin.dnf:
+          name:
+            - httpd
+            - firewalld
+          state: latest
+
+      - name: starting httpd web services
+        ansible.builtin.service:
+          name: httpd
+          state: started
+          enabled: true

@@ -1,0 +1,11 @@
+---
+  - name: testing command module
+    hosts: servera
+    tasks:
+      - name: create folder using cmd module
+        command:
+          cmd: "mkdir -p /home/student/arbitrary"
+
+      - name: create file using cmd module
+        ansible.builtin.command:
+          cmd: "touch /home/student/arbitrary/cmd.txt"

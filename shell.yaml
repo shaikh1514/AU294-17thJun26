@@ -1,0 +1,7 @@
+---
+  - name: testing sheel module
+    hosts: servera
+    tasks:
+      - name: redirect cmd output
+        ansible.builtin.shell:
+          cmd: "timedatectl > /home/student/arbitrary/cmd.txt"

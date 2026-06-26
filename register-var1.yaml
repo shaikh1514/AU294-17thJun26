@@ -1,0 +1,12 @@
+---
+  - name: testing registry variable
+    hosts: serverd
+    tasks:
+      - name: executing cmd
+        ansible.builtin.command:
+          cmd: "lsblk"
+        register: apple
+
+      - name: print registery variable
+        ansible.builtin.debug:
+          var: apple.stdout_lines

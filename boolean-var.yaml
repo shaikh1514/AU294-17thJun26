@@ -1,0 +1,11 @@
+---
+  - name: testitng boolean variable
+    hosts: servera
+    vars:
+      httpd_msg: true
+    tasks:
+      - name: install httpd pkg
+        ansible.builtin.dnf:
+          name: httpd
+          state: latest
+        when: httpd_msg

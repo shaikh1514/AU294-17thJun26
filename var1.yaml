@@ -1,0 +1,16 @@
+---
+  - name: testing variable
+    hosts: serverb
+    vars:
+      fld1: /home/student/ansible/
+      file1: /home/student/ansible/data.txt
+    tasks:
+      - name: create folder in {{ fld1 }}
+        ansible.builtin.file:
+          path: "{{ fld1 }}"
+          state: directory
+
+      - name: create file
+        ansible.builtin.file:
+          path: "{{ file1 }}"
+          state: touch

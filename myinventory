@@ -1,0 +1,17 @@
+[webservers]
+servera ansible_host=servera.lab.example.com tech=java
+serverb ansible_host=serverb.lab.example.com tech=python
+
+[webservers:vars]
+tech=html
+
+[dbservers]
+serverc ansible_host=serverc.lab.example.com tech=ruby
+serverd ansible_host=serverd.lab.example.com tech=perl
+
+[dbservers:vars]
+tech=php
+
+[appservers:children]
+webservers
+dbservers

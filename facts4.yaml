@@ -1,0 +1,11 @@
+---
+  - name: print the facts
+    hosts: servera
+    tasks:
+      - name: print the facts
+        ansible.builtin.debug:
+          msg: |
+            hostname of machine is {{ ansible_facts['hostname'] }}
+            domain name of machine is {{ ansible_fqdn }}
+            ip add if machine is {{ ansible_default_ipv4.address }}
+            and disk size of sda is {{ ansible_devices.sda.size }}

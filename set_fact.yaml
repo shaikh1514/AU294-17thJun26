@@ -1,0 +1,11 @@
+---
+  - name: demo of set fact
+    hosts: serverb
+    tasks:
+      - name: creating fact
+        ansible.builtin.set_fact:
+          disk_size: "{{ ansible_facts['devices']['sda']['size'] }}"
+
+      - name: print the disk size
+        ansible.builtin.debug:
+          msg: "Disk size is {{ disk_size }} gb"

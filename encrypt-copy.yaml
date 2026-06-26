@@ -1,0 +1,9 @@
+---
+  - name: copy the encrypted file 
+    hosts: servera
+    tasks:
+      - name: copy the file
+        ansible.builtin.copy:
+          src: imp_vars.yaml
+          dest: /home/student/
+

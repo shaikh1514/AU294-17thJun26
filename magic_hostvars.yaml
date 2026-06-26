@@ -1,0 +1,7 @@
+---
+  - name: testing hostvars
+    hosts: dbservers
+    tasks:
+      - name: print ip add of serverd
+        ansible.builtin.debug:
+          msg: "The ip add of serverd is {{ hostvars['serverd']['ansible_facts']['default_ipv4']['address'] }}"

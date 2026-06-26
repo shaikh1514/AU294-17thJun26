@@ -1,0 +1,26 @@
+---
+  - name: first play in servera
+    hosts: servera
+    tasks:
+      - name: create a user
+        vars:
+          pass1: redhat
+        ansible.builtin.user:
+          name: john
+          state: present
+          password: "{{ pass1 | password_hash('sha512') }}"
+
+  - name: second play
+    hosts: serverc
+    tasks:
+      - name: installing nfs service
+        ansible.builtin.dnf:
+          name: nfs-utils
+          state: latest
+
+      - name: adding nfs service in firewall
+        ansible.posix.firewalld:
+          service: nfs
+          state: enabled
+          immediate: true
+          permanent: true

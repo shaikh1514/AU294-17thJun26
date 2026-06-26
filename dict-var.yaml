@@ -1,0 +1,12 @@
+---
+  - name: testing dictonary variable
+    hosts: serverb
+    vars:
+      fruits:
+        name: apple
+        test: sweet
+        price: high
+    tasks:
+      - name: print the fruit names
+        ansible.builtin.debug:
+          msg: The fruite available is {{ fruits.name }} and its {{ fruits.test }} in test and price is {{ fruits.price }}.

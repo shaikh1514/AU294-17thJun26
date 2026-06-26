@@ -1,0 +1,11 @@
+---
+  - name: testing task deligation
+    hosts: dbservers
+    remote_user: devops
+    become: false
+    tasks:
+      - name: collecting information
+        ansible.builtin.copy:
+          content: "{{ ansible_facts.default_ipv4.address }}"
+          dest: /tmp/new-delegate.txt
+        delegate_to: localhost

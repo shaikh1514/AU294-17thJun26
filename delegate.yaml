@@ -1,0 +1,16 @@
+---
+  - name: task deligation
+    hosts: all
+    tasks:
+      - name: creating file
+        ansible.builtin.file:
+          path: /tmp/facts/{{ inventory_hostname }}
+          state: directory
+          mode: 0755
+        delegate_to: localhost
+
+      - name: print the facts in file
+        ansible.builtin.copy:
+          content: "{{ ansible_facts | to_nice_yaml }}"
+          dest: /tmp/facts/{{ inventory_hostname }}/facts.yaml
+        delegate_to: localhost

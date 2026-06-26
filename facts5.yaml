@@ -1,0 +1,14 @@
+---
+  - name: print the facts
+    hosts: serverb
+    gather_facts: false
+    tasks:
+      - name: collect facts
+        ansible.builtin.setup:
+          gather_subset:
+            - all
+            - "!network"
+
+      - name: print the facts
+        ansible.builtin.debug:
+          var: ansible_facts

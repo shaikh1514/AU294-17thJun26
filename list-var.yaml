@@ -1,0 +1,12 @@
+---
+  - name: testing list variable
+    hosts: serverc
+    vars:
+      fruits:
+        - apple
+        - mango
+        - lichy
+    tasks:
+      - name: print the furit name
+        ansible.builtin.debug:
+          msg: the fruit avaible is {{ fruits[1] }}

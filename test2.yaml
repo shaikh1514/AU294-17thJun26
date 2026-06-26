@@ -1,0 +1,24 @@
+---
+  - name: creating file and folder
+    hosts: dbservers
+    remote_user: student
+    become: true
+    tasks:
+      - name: create folder
+        ansible.builtin.file: 
+          path: /home/student/apple1
+          state: directory
+          owner: student
+          group: student
+          mode: '0775'
+      
+      - name: create file
+        ansible.builtin.file:
+          path: /home/student/apple1/file.txt
+          state: touch
+
+      - name: add data
+        ansible.builtin.copy:
+          content: "This data added by Ansible"
+          dest: /home/student/apple1/file.txt
+ 

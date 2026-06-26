@@ -1,0 +1,14 @@
+---
+  - name: testing nested variable
+    hosts: serverd
+    vars:
+      user: 
+        name: john
+        address:
+          city: dubai
+          country: uae
+          phone: 12345
+    tasks:
+      - name: print the value
+        ansible.builtin.debug:
+          msg: the user name is {{ user.name }} and its city is {{ user.address.city }} country is {{ user.address.country }} and phone number is {{ user.address.phone }}

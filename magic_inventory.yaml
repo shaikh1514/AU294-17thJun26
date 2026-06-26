@@ -1,0 +1,7 @@
+---
+  - name: testing ivnetnory_hostname variable
+    hosts: appservers
+    tasks:
+      - name: print the hostname
+        ansible.builtin.debug:
+          msg: "The task is executing at {{ inventory_hostname }}"

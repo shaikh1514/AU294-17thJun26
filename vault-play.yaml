@@ -1,0 +1,10 @@
+---
+  - name: testing valut variable
+    hosts: serverb
+    vars_files:
+      - imp_vars.yaml
+      - imp_vars2.yaml
+    tasks:
+      - name: print the value
+        ansible.builtin.debug:
+          msg: "the username of database is {{ db_username }} and password is {{ db_password }} and security username is {{ username }} and password is {{ password }}"

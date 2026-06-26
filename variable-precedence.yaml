@@ -1,0 +1,15 @@
+---
+  - name: testing variable precendence
+    hosts: appservers
+    vars_files:
+      - myvars/imp.yaml
+    tasks:
+      - name: print the tech value
+        ansible.builtin.debug:
+          msg: We are learning {{ tech }} technology
+
+      - name: print the tech value
+        ansible.builtin.debug:
+          msg: We are not learning {{ tech }} subject
+        vars:
+          tech: physics
