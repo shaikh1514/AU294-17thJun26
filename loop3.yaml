@@ -1,0 +1,16 @@
+---
+  - name: testing registry variable with loop[
+    hosts: serverd
+    tasks:
+      - name: executing two commands
+        ansible.builtin.command:
+          cmd: "{{ item }}"
+        loop:
+          - date
+          - hostname
+        register: lacoste
+
+      - name: print both output
+        ansible.builtin.debug:
+          msg: the output of commands is {{ item['stdout'] }}
+        loop: "{{ lacoste['results'] }}"

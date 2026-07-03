@@ -1,0 +1,23 @@
+---
+  - name: testing loop function
+    hosts: webservers
+    tasks:
+      - name: installing multiple package
+        ansible.builtin.dnf:
+          name:
+            - httpd
+            - firewalld
+            - nfs-utils
+            - autofs
+          state: latest
+
+      - name: manage multiple services
+        ansible.builtin.service:
+          name: "{{ item }}"
+          state: started
+          enabled: true
+        loop:
+          - httpd
+          - firewalld
+          - nfs-utils
+          - autofs

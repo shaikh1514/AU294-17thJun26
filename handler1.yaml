@@ -1,0 +1,31 @@
+---
+  - name: testing handlers
+    hosts: serverb
+    force_handlers: true
+    tasks:
+      - name: creating file
+        ansible.builtin.file:
+          path: /home/student/handler.txt
+          state: touch
+        notify: handler-task1
+
+      - name: execute cmd
+        ansible.builtin.command:
+          cmd: ls /home/student
+        notify: handler-task2
+
+      - name: handler execution
+        ansible.builtin.meta: flush_handlers
+
+      - name: third task
+        ansible.builtin.command:
+          cmd: nocmd
+    
+    handlers:
+      - name: handler-task2
+        ansible.builtin.debug:
+          msg: This is handler task2
+
+      - name: handler-task1
+        ansible.builtin.debug:
+          msg: This is handler task1

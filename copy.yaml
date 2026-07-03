@@ -1,0 +1,9 @@
+---
+  - name: testing copy module
+    hosts: serverc
+    tasks:
+      - name: copy inventory
+        ansible.builtin.copy:
+          src: myinventory
+          dest: /home/student/module
+

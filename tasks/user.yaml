@@ -1,0 +1,11 @@
+---
+  - name: manage user
+    ansible.builtin.user:
+      name: "{{ username }}"
+      state: present
+      groups: "{{ groupsname }}"
+      password: "{{ pass1 | password_hash('sha512') }}"
+
+  - name: included task2
+    ansible.builtin.command:
+      cmd: ls

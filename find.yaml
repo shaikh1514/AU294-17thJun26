@@ -1,0 +1,14 @@
+---
+  - name: test find module
+    hosts: serverc
+    tasks:
+      - name: find the data using find module
+        ansible.builtin.find:
+          paths: /home
+          patterns: "*.txt"
+          file_type: file
+        register: find
+
+      - name: print the info
+        debug:
+          var: find

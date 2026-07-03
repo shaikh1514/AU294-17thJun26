@@ -1,0 +1,20 @@
+---
+  - name: testing changed_when module
+    hosts: serverd
+    tasks:
+      - name: task-1 executing cmd
+        ansible.builtin.command:
+          cmd: hostname
+        changed_when: false
+
+      - name: task-2 creating file
+        ansible.builtin.file:
+          path: /home/student/changed_when.txt
+          state: touch
+        changed_when: false
+
+      - name: task-3 print a msg
+        ansible.builtin.debug:
+          msg: This is the end 
+        changed_when: true
+

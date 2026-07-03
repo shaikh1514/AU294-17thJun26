@@ -1,0 +1,21 @@
+---
+  - name: testing include and import features
+    hosts: webservers
+    tasks:
+      - name: importing package tasks
+        ansible.builtin.import_tasks: tasks/package.yaml
+        vars:
+          pkg1: httpd
+          pkg2: firewalld
+          pkg3: vsftpd
+          action: latest
+
+      - name: include user tasks
+        ansible.builtin.include_tasks: tasks/user.yaml
+        vars:
+          username: smith
+          groupsname: devops
+          pass1: redhat123
+
+  - name: import playbook
+    ansible.builtin.import_playbook: facts1.yaml

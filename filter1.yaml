@@ -1,0 +1,14 @@
+---
+  - name: testing filters 
+    hosts: servera
+    tasks:
+      - name: executing a cmd
+        ansible.builtin.command:
+          cmd: hostnamectl
+        register: pineapple
+
+      - name: print the output
+        ansible.builtin.template:
+          src: date.j2
+          dest: /home/student/filter.yml
+          

@@ -1,0 +1,12 @@
+---
+  - name: testing stat module
+    hosts: serverc
+    tasks:
+      - name: gethering info of apple.txt
+        ansible.builtin.stat:
+          path: /home/student/module/apple.txt
+        register: apple
+
+      - name: print the info
+        debug:
+          var: apple

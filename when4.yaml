@@ -1,0 +1,11 @@
+---
+  - name: wen with storage
+    hosts: servera
+    tasks:
+      - name: print the disk information
+        ansible.builtin.debug:
+          msg: The memory and disk size available
+        when: ansible_facts.memtotal_mb > 2000 and ansible_facts['devices']['sdb']['size'] > '2.00 GB'
+
+
+        

@@ -1,0 +1,8 @@
+---
+  - name: generate host file
+    hosts: all
+    tasks:
+      - name: generate host file
+        ansible.builtin.template:
+          src: host.j2
+          dest: /etc/hosts

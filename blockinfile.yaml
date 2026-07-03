@@ -1,0 +1,12 @@
+---
+  - name: testing block module
+    hosts: serverc
+    tasks:
+      - name: testingg block module
+        ansible.builtin.blockinfile:
+          path: /home/student/module/apple.txt
+          block: |
+            "After AU294 training you should
+            prepare for the Ansible exam which
+            code is EX294"
+          state: present

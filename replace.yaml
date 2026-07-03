@@ -1,0 +1,10 @@
+---
+  - name: testing replace module
+    hosts: serverc
+    tasks:
+      - name: replace ansible with advance ansible
+        ansible.builtin.replace:
+          path: /home/student/module/apple.txt
+          regexp: '^Welcome to Ansible Training$'
+          replace: 'Welcome to Advance Ansible Training'
+

@@ -1,0 +1,28 @@
+---
+  - name: print variable using loop
+    hosts: serverc
+    vars:
+      fruits:
+        - apple
+        - banana
+        - mango
+      users:
+        - name: john
+          department: automation
+          city: london
+        - name: sarah
+          department: database
+          city: delhi
+        - name: marks
+          department: finance
+          city: mumbai
+    tasks:
+      - name: print the fruti names
+        ansible.builtin.debug:
+          msg: The fruits available is {{ item }}
+        loop: "{{ fruits }}"
+      
+      - name: print dicdtionary variable
+        ansible.builtin.debug:
+          msg: The user {{ item.name }} is working in {{ item.department }} segment and living in {{ item.city }} city.
+        loop: "{{ users }}"

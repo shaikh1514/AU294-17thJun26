@@ -1,0 +1,23 @@
+---
+  - name: testing file module
+    hosts: serverc
+    tasks:
+      - name: create folder
+        ansible.builtin.file:
+          path: /home/student/module
+          state: directory
+          owner: student
+          group: devops
+          mode: '0770'
+          setype: _default
+
+      - name: create file inside folder
+        ansible.builtin.copy:
+          content: "This file managed by Ansible"
+          dest: /home/student/module/apple.txt
+
+      - name: delete the data
+        ansible.builtin.file:
+          path: /home/student/module/myinventory
+          state: absent
+

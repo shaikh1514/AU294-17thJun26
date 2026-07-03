@@ -1,0 +1,8 @@
+---
+  - name: testing when condition
+    hosts: appservers
+    tasks:
+      - name: execute task only in serverd
+        ansible.builtin.debug:
+          msg: The machine name is {{ inventory_hostname }}
+        when: inventory_hostname is not in groups['dbservers']

@@ -1,0 +1,15 @@
+---
+  - name: testing lineinfile
+    hosts: serverc
+    tasks:
+      - name: adding data in apple.txt
+        ansible.builtin.lineinfile:
+          path: /home/student/module/apple.txt
+          line: "Welcome to Ansible Training"
+          state: present
+
+      - name: adding new line
+        ansible.builtin.lineinfile:
+          path: /home/student/module/apple.txt
+          line: "Openshift is fun to learn"
+          insertafter: "This file managed by Ansible"

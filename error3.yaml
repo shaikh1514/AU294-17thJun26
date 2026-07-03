@@ -1,0 +1,16 @@
+---
+  - name: testing error modules
+    hosts: serverc
+    tasks:
+      - name: task-1
+        ansible.builtin.command:
+          cmd: hostname
+
+      - name: task-2
+        ansible.builtin.debug:
+          msg: This task failed intention
+        failed_when: inventory_hostname == 'serverd'
+
+      - name: task-3
+        ansible.builtin.command:
+          cmd: date

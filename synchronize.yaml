@@ -1,0 +1,16 @@
+---
+  - name: testing sync module
+    hosts: serverd, serverc
+    tasks:
+      - name: sync host_vars directoy with serverd
+        ansible.posix.synchronize:
+          src: host_vars
+          dest: /home/student/
+        when: inventory_hostname == 'serverd'
+      
+      - name: pull the directory from serverc
+        ansible.posix.synchronize:
+          src: /home/student/module
+          dest: m1/
+          mode: pull
+        when: inventory_hostname == 'serverc'

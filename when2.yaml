@@ -1,0 +1,12 @@
+---
+  - name: testing when with boolean
+    hosts: serverc
+    vars:
+      autofs: false
+    tasks:
+      - name: install the package
+        ansible.builtin.dnf:
+          name: autofs
+          state: latest
+        when: autofs
+  

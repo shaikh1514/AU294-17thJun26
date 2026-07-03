@@ -1,1 +1,4 @@
 tech: ansible
+time1: morning
+pkgg1: httpd
+svcc1: firewalld

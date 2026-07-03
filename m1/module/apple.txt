@@ -1,0 +1,8 @@
+This file managed by Ansible
+Openshift is fun to learn
+Welcome to Ansible Training
+# BEGIN ANSIBLE MANAGED BLOCK
+"After AU294 training you should
+prepare for the Ansible exam which
+code is EX294"
+# END ANSIBLE MANAGED BLOCK

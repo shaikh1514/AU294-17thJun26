@@ -1,0 +1,25 @@
+---
+  - name: testing lbock, rescue and always
+    hosts: servera
+    tasks:
+      - name: block section
+        block:
+          - name: block task-1
+            ansible.builtin.debug:
+              msgg: this is block task 1
+
+          - name: block task-2
+            ansible.builtin.command:
+              cmd: ls
+        rescue:
+          - name: rescue task-1
+            ansible.builtin.debug:
+              msg: this is rescue task 1
+
+          - name: rescue task-2
+            ansible.builtin.command:
+              cmd: ls
+        always:
+          - name: always task
+            debug:
+              msg: this task always execute

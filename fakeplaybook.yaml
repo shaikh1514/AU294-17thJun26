@@ -1,0 +1,8 @@
+---
+  - name: testing multiple hosts
+    hosts: all !*.lab.example.com
+    gather_facts: false
+    tasks:
+      - name: print hostname
+        ansible.builtin.debug:
+          msg: this tasks is executing at {{ inventory_hostname }}

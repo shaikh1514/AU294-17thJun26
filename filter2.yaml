@@ -1,0 +1,15 @@
+---
+  - name: testing filters
+    hosts: servera
+    vars:
+      username:
+        - steve smith
+        - mitchel starc
+        - ben stokes
+        - virat kohli
+      sports: football
+    tasks:
+      - name: print hostname
+        debug:
+          msg: >
+                the players {{ usernamee | title }} are playing in sports {{ sports | default('cricket') }}

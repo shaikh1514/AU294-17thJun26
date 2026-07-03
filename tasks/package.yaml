@@ -1,0 +1,15 @@
+---
+  - name: manage package
+    ansible.builtin.dnf:
+      name:
+        - "{{ pkg1 }}"
+        - "{{ pkg2 }}"
+        - "{{ pkg3 }}"
+      state: "{{ action }}"
+  - name: task2
+    ansible.builtin.command:
+      cmd: ls
+
+  - name: task3
+    ansible.builtin.debug:
+      msg: hi

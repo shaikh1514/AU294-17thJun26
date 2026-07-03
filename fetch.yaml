@@ -1,0 +1,15 @@
+---
+  - name: testing fetch module
+    hosts: dbservers, serverb
+    tasks:
+      - name: fetch logs from dbservers
+        ansible.builtin.fetch:
+          src: /var/log/secure
+          dest: logs/secure-logs
+
+      - name: fetch serverb logs
+        ansible.builtin.fetch:
+          src: /var/log/secure
+          dest: logs/secure-logs/serverb-log
+          flat: true
+        when: inventory_hostname == 'serverb'

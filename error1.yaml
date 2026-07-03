@@ -1,0 +1,16 @@
+---
+  - name: testing error modules
+    hosts: serverc
+    ignore_errors: true
+    tasks:
+      - name: task-1
+        ansible.builtin.command:
+          cmd: hostname
+
+      - name: task-2
+        ansible.builtin.command:
+          cmd: notcmd
+
+      - name: task-3
+        ansible.builtin.command:
+          cmd: date
