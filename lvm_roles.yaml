@@ -1,0 +1,34 @@
+---
+  - name: creating lvm using roles
+    hosts: servera
+    vars:
+      storage_pools:
+        - name: vg01
+          type: lvm
+          disks:
+            - /dev/sdb
+          volumes:
+            - name: lv01
+              size: 500m
+              mount_point: "/mnt/lvm1"
+              fs_type: xfs
+              state: present
+            - name: lv02
+              size: 500m
+              mount_point: "/mnt/lvm2"
+              fs_type: ext4
+              state: present
+            - name: lv-swap
+              size: 200m
+              fs_type: swap
+              state: present
+    pre_tasks:
+      - name: creating mount point
+        ansible.builtin.file:
+          path: "{{ item }}"
+          state: directory
+        loop:
+          - /mnt/lvm1
+          - /mnt/lvm2
+    roles:
+      - redhat.rhel_system_roles.storage

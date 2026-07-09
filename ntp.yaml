@@ -1,0 +1,13 @@
+---
+  - name: testing ntp servers
+    hosts: dbservers
+    vars:
+      timesync_ntp_servers:
+        - hostname: classroom.example.com
+          iburst: yes
+        - hostname: time.google.com
+          iburst: yes
+        - hostname: time.nplindia.org
+          iburst: yes
+    roles:
+      - redhat.rhel_system_roles.timesync

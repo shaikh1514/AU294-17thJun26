@@ -1,0 +1,141 @@
+---
+- name: test elb_target_group with target_type = alb
+  block:
+    - name: set up VPC and networking infrastructure
+      include_role:
+        name: setup_ec2_instance_env
+      vars:
+        ec2_instance_test_name: elb_target_alb
+        vpc_name: "{{ resource_prefix }}-vpc-alb"
+        vpc_seed: "{{ resource_prefix }}-elb-target-alb"
+
+    - name: create testing internet gateway
+      ec2_vpc_igw:
+        vpc_id: "{{ testing_vpc.vpc.id }}"
+        state: present
+      register: igw
+
+    - name: create routing rules
+      ec2_vpc_route_table:
+        vpc_id: "{{ testing_vpc.vpc.id }}"
+        tags:
+          created: "{{ resource_prefix }}-route"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+        subnets:
+          - "{{ testing_subnet_a.subnet.id }}"
+          - "{{ testing_subnet_b.subnet.id }}"
+      register: route_table
+
+    # Alias variables for compatibility with existing test code
+    - name: set compatibility variables
+      set_fact:
+        vpc: "{{ testing_vpc }}"
+        subnet_1: "{{ testing_subnet_a }}"
+        subnet_2: "{{ testing_subnet_b }}"
+        # sg is already set by setup_ec2_instance_env
+
+    - name: set up testing target group for NLB (type=alb)
+      elb_target_group:
+        name: "{{ elb_target_group_name }}"
+        target_type: alb
+        state: present
+        protocol: TCP
+        port: 80
+        vpc_id: "{{ vpc.vpc.id }}"
+      register: elb_target_group
+
+    - name: assert target group was created successfully
+      assert:
+        that:
+          - elb_target_group.changed
+          - elb_target_group.target_group_name == elb_target_group_name
+          - elb_target_group.target_type == 'alb'
+          - elb_target_group.vpc_id == vpc.vpc.id
+          - elb_target_group.port == 80
+          - elb_target_group.protocol == 'TCP'
+          - elb_target_group.load_balancer_arns | length == 0
+
+    - name: create a network load balancer and attach to target group
+      elb_network_lb:
+        name: "{{ lb_name }}-nlb"
+        subnets:
+          - "{{ subnet_1.subnet.id }}"
+          - "{{ subnet_2.subnet.id }}"
+        listeners:
+          - Protocol: TCP
+            Port: 80
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "{{ elb_target_group_name }}"
+        state: present
+      register: nlb
+
+    - name: assert NLB was created successfully and attached to target group
+      assert:
+        that:
+          - nlb is changed
+          - nlb.listeners | length == 1
+          - nlb.listeners[0].default_actions[0].forward_config.target_groups[0].target_group_arn == elb_target_group.target_group_arn
+
+    - name: get target group info
+      elb_target_group_info:
+        load_balancer_arn: "{{ nlb.load_balancer_arn }}"
+      register: tg_info
+
+    - name: assert target group's target is nlb
+      assert:
+        that:
+          - tg_info.target_groups[0].target_group_name == elb_target_group_name
+          - tg_info.target_groups[0].target_type == 'alb'
+          - tg_info.target_groups[0].load_balancer_arns | length == 1
+          - tg_info.target_groups[0].load_balancer_arns[0] == nlb.load_balancer_arn
+
+  always:
+  - name: remove network load balancer
+    elb_network_lb:
+      name: "{{ lb_name }}-nlb"
+      state: absent
+      wait: true
+      wait_timeout: 600
+    register: removed
+    retries: 10
+    until: removed is not failed
+    ignore_errors: true
+
+  - name: remove elb target group
+    elb_target_group:
+      name: "{{ elb_target_group_name }}"
+      target_type: alb
+      state: absent
+      protocol: HTTP
+      port: 80
+      vpc_id: "{{ vpc.vpc.id }}"
+    ignore_errors: true
+
+  - name: remove routing rules
+    ec2_vpc_route_table:
+      state: absent
+      lookup: id
+      route_table_id: "{{ route_table.route_table.id }}"
+    register: removed
+    retries: 5
+    until: removed is not failed
+    ignore_errors: true
+
+  - name: wait for load balancer ENIs to be deleted after LB removal
+    amazon.aws.ec2_eni_info:
+      filters:
+        vpc-id: "{{ testing_vpc.vpc.id }}"
+        description: "ELB*"
+    register: lb_enis
+    until: lb_enis.network_interfaces | length == 0
+    retries: 60
+    delay: 5
+    ignore_errors: true
+
+  - name: cleanup VPC and associated resources
+    include_role:
+      name: setup_ec2_instance_env
+      tasks_from: cleanup

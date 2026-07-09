@@ -1,0 +1,17 @@
+---
+users:
+  - name: webadmin1
+    group: web
+    role: webadmin
+  - name: webadmin2
+    group: web
+    role: webadmin
+  - name: dbadmin1
+    group: db
+    role: dbadmin
+  - name: dbadmin2
+    group: db
+    role: dbadmin
+  - name: admin
+    group: admin
+    role: admin

@@ -1,0 +1,6 @@
+---
+# tasks file for test-role
+  - name: role_task-1
+    command:
+      cmd: ls
+    notify: role_handler

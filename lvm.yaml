@@ -1,0 +1,53 @@
+---
+  - name: create two partition and build lvm
+    hosts: serverc
+    tasks:
+      - name: create 1st partition
+        community.general.parted:
+          device: /dev/sdb
+          number: 1
+          state: present
+          label: gpt
+          flags: lvm
+          part_start: 0%
+          part_end: 50%
+
+      - name: create 2nd partition
+        community.general.parted:
+          device: /dev/sdb
+          number: 2
+          state: present
+          label: gpt
+          flags: lvm
+          part_start: 51%
+          part_end: 100%
+
+      - name: create volume group "ansible-vg"
+        community.general.lvg:
+          vg: ansible-vg
+          pvs: ['/dev/sdb1', '/dev/sdb2']
+          pesize: 16
+
+      - name: create logical volume "ansible-lv"
+        community.general.lvol:
+          vg: ansible-vg
+          lv: ansible-lv
+          size: 1g
+          force: yes
+
+      - name: create mount point
+        ansible.builtin.file:
+          path: /mnt/ansible-lvm
+          state: directory
+
+      - name: assign ext4 filesystem
+        community.general.filesystem:
+          fstype: ext4
+          dev: /dev/ansible-vg/ansible-lv
+
+      - name: mount the file system
+        ansible.posix.mount:
+          path: /mnt/ansible-lvm
+          src: /dev/ansible-vg/ansible-lv
+          fstype: ext4
+          state: mounted

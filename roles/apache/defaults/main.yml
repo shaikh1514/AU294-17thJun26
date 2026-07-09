@@ -1,0 +1,6 @@
+---
+# defaults file for apache
+pkg1: http
+pkg2: firewall
+svc1: httpd
+svc2: firewalld

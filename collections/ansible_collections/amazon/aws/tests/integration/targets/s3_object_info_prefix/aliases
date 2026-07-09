@@ -1,0 +1,5 @@
+time=1m
+
+cloud/aws
+
+s3_object_info

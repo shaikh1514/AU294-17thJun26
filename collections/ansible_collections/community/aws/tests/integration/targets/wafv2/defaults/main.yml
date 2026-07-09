@@ -1,0 +1,15 @@
+---
+web_acl_name: '{{ tiny_prefix }}-web-acl'
+rule_group_name: '{{ tiny_prefix }}-rule-group'
+alb_name: "my-alb-{{ tiny_prefix }}"
+tg_name: "my-tg-{{ tiny_prefix }}"
+
+# VPC CIDR allocation - randomised to avoid conflicts
+vpc_cidr: 10.{{ 256 | random(seed=resource_prefix) }}.164.0/22
+
+cidr:
+  main: '{{ vpc_cidr }}'
+  a: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 0) }}"
+  b: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 1) }}"
+  c: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 2) }}"
+  d: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 3) }}"

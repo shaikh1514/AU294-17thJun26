@@ -1,0 +1,25 @@
+dependencies: []
+galaxy_info:
+  author: ComplianceAsCode development team
+  description: Australian Cyber Security Centre (ACSC) ISM Official - Base
+  galaxy_tags:
+  - system
+  - hardening
+  - openscap
+  - ssg
+  - scap
+  - security
+  - compliance
+  - complianceascode
+  - redhatofficial
+  - redhat
+  - rhel10
+  - ismo
+  issue_tracker_url: https://github.com/ComplianceAsCode/content/issues
+  license: BSD-3-Clause
+  min_ansible_version: 2.9
+  platforms:
+  - name: EL
+    versions:
+    - 0
+  role_name: rhel10_ism_o

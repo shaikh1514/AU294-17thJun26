@@ -1,0 +1,10 @@
+---
+  - src: geerlingguy.php
+    name: php-external
+
+  - src: https://github.com/geerlingguy/ansible-role-java.git
+    name: java-external
+    scm: git
+
+  - src: file:///tmp/ansible-role-docker-8.0.0.tar.gz
+    name: docker-external

@@ -1,0 +1,10 @@
+---
+  - name: testing roles
+    hosts: all
+    tasks:
+      - name: printing msg
+        debug:
+          msg: hi
+
+    roles:
+      - apache

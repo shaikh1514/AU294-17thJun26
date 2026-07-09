@@ -1,0 +1,11 @@
+---
+  - name: resizing lvm
+    hosts: serverc
+    tasks:
+      - name: resize lvm
+        community.general.lvol:
+          vg: ansible-vg
+          lv: ansible-lv
+          size: 2g
+          resizefs: true
+          force: yes

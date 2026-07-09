@@ -1,0 +1,26 @@
+dependencies: []
+galaxy_info:
+  author: ComplianceAsCode development team
+  description: Centro Criptológico Nacional (CCN) - STIC for Red Hat Enterprise Linux
+    9 - Intermediate
+  galaxy_tags:
+  - system
+  - hardening
+  - openscap
+  - ssg
+  - scap
+  - security
+  - compliance
+  - complianceascode
+  - redhatofficial
+  - redhat
+  - rhel9
+  - ccnintermediate
+  issue_tracker_url: https://github.com/ComplianceAsCode/content/issues
+  license: BSD-3-Clause
+  min_ansible_version: 2.9
+  platforms:
+  - name: EL
+    versions:
+    - 9
+  role_name: rhel9_ccn_intermediate

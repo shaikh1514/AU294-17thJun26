@@ -1,0 +1,100 @@
+name: CI_roles
+on:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+
+  roles_matrix:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ansible_collections/community/cassandra
+    outputs:
+      matrix: ${{ steps.json-list.outputs.roles-to-test }}
+
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          path: ansible_collections/community/cassandra
+
+      - name: Generate module list
+        run: |
+          find roles -type d -maxdepth 1 -mindepth 1 -not -name cassandra_medusa | cut -d '/' -f2 | awk NF | jq -sRc 'split("\n") | map(select(length > 0))' > int_test_roles.json
+
+      - name: Set output variable
+        id: json-list
+        run: |
+          output=$(cat int_test_roles.json)
+          echo "roles-to-test=$output" >> $GITHUB_OUTPUT
+          echo "$output"
+
+  roles:
+    runs-on: ubuntu-24.04
+    needs: roles_matrix
+    defaults:
+      run:
+        working-directory: ansible_collections/community/cassandra
+
+    strategy:
+      matrix:
+        python_version:
+          - "3.12"
+        cassandra_role: ${{ fromJson(needs.roles_matrix.outputs.matrix) }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          path: ansible_collections/community/cassandra
+
+      - name: Set up Python ${{ matrix.test_scenario.python_version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.test_scenario.python_version }}
+
+      - name: Uninstall existing ansible
+        run: sudo apt remove ansible
+
+      - name: Ensure wheel is installed
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install wheel
+
+      - name: Install requirements
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: |
+            pip install molecule molecule-docker pytest-testinfra
+
+      - name: Install ansible.posix
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: ansible-galaxy collection install ansible.posix -p ansible_collections/
+
+      - name: Add molecule location to path
+        run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+      - name: Build the collection
+        run: ansible-galaxy collection build
+
+      - name: Rename the build artifact
+        run: mv community-cassandra-*.tar.gz community-cassandra-latest.tar.gz
+
+      - name: Install collection
+        run: ansible-galaxy collection install community-cassandra-*.tar.gz
+
+      - name: Run molecule test for ${{ matrix.cassandra_role }}
+        run: molecule test
+        working-directory: ansible_collections/community/cassandra/roles/${{ matrix.cassandra_role }}
+        env:
+          ANSIBLE_ALLOW_BROKEN_CONDITIONALS: 1  # need for  TASK [Set async_dir for HOME env]

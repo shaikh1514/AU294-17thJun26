@@ -1,0 +1,129 @@
+releases:
+  1.0.4:
+    changes:
+      release_summary: "Maintenance release"
+      bug_fixes:
+        - cassandra_cqlsh - Double quote cql shell command when it contains single quotes.
+        - All modules - Ensure login parameters are available across all modules.
+      release_date: '2021-02-27'
+  1.0.5:
+    changes:
+      release_summary: "Maintenance release"
+      bugfixes:
+        - Remove cassandra_dba role.
+        - Add missing metadata to existing roles.
+      release_date: '2021-04-21'
+  1.0.6:
+    changes:
+      release_summary: "Maintenance release"
+      bugfixes:
+        - Improve regex in cassandra_keyspace module - PR160.
+        - Fix import error in cassandra_cqlsh after 311x upgrade - PR158.
+      minor_changes:
+        - Various minor module documentation improvements PR161.
+        - Add additional_args parameter to cassandra_cqlsh module PR149.
+  1.1.0:
+    changes:
+      release_summary: Adds new module cassandra_reload and provides a few minor fixes.
+      minor_changes:
+       - 183 - Adds new module cassandra_reload.
+       - 182 - Add retries to network related tasks in all roles.
+       - A bunch of other PRs addressed issues in the integration test code related to Cassandra 4.0.
+  1.2.0:
+    changes:
+      release_summary: Adds many new modules and a minor bug fix.
+      bugfixes:
+        - 204 - Fix cassandra_role keyspace idempotency bug.
+      modules:
+        - name: cassandra_garbagecollect
+          description: #198
+        - name: cassandra_maxhintwindow
+          description: #197
+        - name: cassandra_batchlogreplaythrottle
+          description: #196
+        - name: cassandra_invalidatecache
+          description: #195
+        - name: cassandra_removenode
+          description: #193
+        - name: cassandra_decommission
+          description: #192
+        - name: cassandra_assassinate
+          description: #191
+        - name: cassandra_concurrency
+          description: #189
+        - name: cassandra_fullquerylog
+          description: #188
+        - name: cassandra_truncatehints
+          description: #187
+        - name: cassandra_timeout
+          description: #186
+        - name: cassandra_compact
+          description: #185
+  1.2.2:
+    changes:
+      release_summary: Maintenance release
+      bugfixes:
+        - 214 - cassandra_fullquerylog - Fix typo in documentation.
+        - 213 - cassandra_cqlsh - Missing handler for `--ssl` option for `cassandra_cqlsh`
+  1.2.3:
+    changes:
+      release_summary: Maintenance release
+      bugfixes:
+        - 239 - cassandra_role - Adds quoting to role name to support special characters in the role name, i.e. my-app-role.
+  1.2.4:
+    changes:
+      release_summary: Maintenance release
+      bugfixes:
+        - 244 cassandra_repository - Update APT Repository url.
+  1.3.0:
+    changes:
+      release_summary: Maintenance release
+    minor_changes:
+      - 230 - Adds basic SSL/TLS support to the cassandra_keyspace, cassandra_role and cassandra_table modules.
+  1.3.1:
+    changes:
+      release_summary: Maintenance release
+      minor_changes:
+        - 269 - cassandra_role - Allow for update of passwords.
+      bugfixes:
+        - 259 - cassandra_repository - Fix repo url.
+        - 258 - cassandra_repository - Add static key.
+  1.3.2:
+    changes:
+      release_summary: Maintenance release
+      minor_changes:
+        - 274 - cassandra_keyspace & cassandra_role - Ensure that data_centres parameter and aliases are consistent.
+  1.3.3:
+    changes:
+      release_summary: Maintenance release. Version bumped to get the auto-release running.
+      minor_changes:
+        - None
+  1.4.0:
+    changes:
+      release_summary: Maintenance release.
+    minor_changes:
+      - 287 - Adds the consistency_level parameter to the cassandra_role, cassandra_keyspace and cassandra_table modules.
+  1.4.1:
+    changes:
+      release_summary: Maintenance release.
+    minor_change:
+      - 306 - various roles - Use full module paths.
+  1.5.0:
+    changes:
+      release_summary: New features in cassandra_status module.
+    modules:
+      - name: cassandra_status
+        description: Adds resolve_ip and keyspace parameters and provides richer return data (#316).
+  1.5.1:
+    changes:
+      release_summary: Maintenance release.
+    minor_change:
+      - Update RETURN documentation block in the cassandra_status to describe return data correctly (#323).
+  1.5.2:
+    changes:
+      release_summary: Adds two new modules.
+    modules:
+      - name: cassandra_statusbinary
+        description: Returns the status of the binary protocol, also known as the native transport (#324).
+      - name: cassandra_statusgossip
+        description: Returns the status of gossip (#324).

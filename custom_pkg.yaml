@@ -1,0 +1,8 @@
+---
+  - name: install custom_pkg
+    hosts: all
+    tasks:
+      - name: install package
+        ansible.builtin.dnf:
+          name: simple-agent
+          state: latest

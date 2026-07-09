@@ -1,0 +1,12 @@
+---
+  - name: configuring repo in all mcahine
+    hosts: all
+    tasks:
+      - name: adding a repo
+        ansible.builtin.yum_repository:
+          name: additonal-repo
+          description: "this is lab repository"
+          baseurl: http://serverb.lab.example.com/yum/repository/
+          enabled: true
+          gpgcheck: true
+          gpgkey: http://serverb.lab.example.com/yum/repository/RPM-GPG-KEY-example

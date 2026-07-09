@@ -1,0 +1,19 @@
+---
+  - name: creating partition using roles
+    hosts: serverb
+    vars:
+      storage_volumes:
+        - name: role_disk
+          type: disk
+          disks:
+            - /dev/sdb
+          fs_type: xfs
+          mount_point: /mnt/disk
+    pre_tasks:
+      - name: create mont point
+        ansible.builtin.file:
+          path: /mnt/disk
+          state: directory
+    roles:
+      - redhat.rhel_system_roles.storage
+

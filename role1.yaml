@@ -1,0 +1,30 @@
+---
+  - name: testing tasks order
+    hosts: serverd
+    pre_tasks:
+      - name: pre-task1
+        command:
+          cmd: lsblk
+        notify: pre_handler
+    roles:
+      - test-role
+    tasks:
+      - name: regular-task
+        command:
+          cmd: hostnamectl
+        notify: regular_handler
+    post_tasks:
+      - name: post-task1
+        command:
+          cmd: date
+        notify: post_handler
+    handlers:
+      - name: pre_handler
+        debug:
+          msg: this is pre handler task
+      - name: regular_handler
+        debug:
+          msg: this is regular task handler
+      - name: post_handler
+        debug:
+          msg: this is post task handler

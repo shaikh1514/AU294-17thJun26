@@ -1,0 +1,289 @@
+---
+# (c) 2019,  Rhys Campbell <rhys.james.campbell@googlemail.com>
+
+# This file is part of Ansible
+#
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+
+# ============================================================
+#- name: Disable IPv6 with sysctl
+#  sysctl:
+#    name: "{{ item }}"
+#    value: 1
+#    reload: yes
+#  with_items:
+#    - net.ipv6.conf.all.disable_ipv6
+#    - net.ipv6.conf.default.disable_ipv6
+#    - net.ipv6.conf.lo.disable_ipv6
+
+- name: Install required packages
+  package:
+    name: "{{ required_packages }}"
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Install Redhat packages
+  package:
+    name: "{{ redhat_packages }}"
+  when: ansible_os_family == 'RedHat'
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Start Cassandra service if it is installed
+  service:
+    name: "{{ cassandra_service }}"
+    state: "started"
+  ignore_errors: yes
+  register: cass
+
+- pause:
+    seconds: 30
+  when:
+    - cass.changed is defined
+    - cass.changed == True
+
+- name: Test nodetool without auth from shell
+  command: nodetool status
+  register: nt
+  ignore_errors: yes
+
+- name: Remove auth from the Cassandra instance if it is configured
+  block:
+    - name: Include tasks to remove auth
+      include_tasks: cassandra_deauth.yml
+  when:
+    - nt.stderr is defined
+    - "'Authentication failed! Credentials required' in nt.stderr"  # TODO Check for auth required msg
+
+- name: Include vars for os family
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Install OpenJDK package
+  yum:
+    name: "{{ openjdk }}"
+    state: present
+  when: ansible_os_family == 'RedHat'
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Setup Cassandra yum repo
+  yum_repository:
+    name: "{{ cassandra_yum.name }}"
+    description: "{{ cassandra_yum.description }}"
+    baseurl: "{{ cassandra_yum.baseurl }}"
+    enabled: "{{ cassandra_yum.enabled }}"
+    gpgcheck: "{{ cassandra_yum.gpgcheck }}"
+    gpgkey: "{{ cassandra_yum.gpgkey }}"
+  when: ansible_os_family == 'RedHat'
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Install cassandra yum package
+  #dnf:
+  yum:
+    name: "{{ cassandra_yum_pkg }}"
+    state: present
+    #allowerasing: yes
+  when:
+    - ansible_os_family == 'RedHat'
+  notify:
+    - redhat_remove_cassandra
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Flip back to python 2.7 on CentOS 7
+  block:
+    - ansible.builtin.shell: update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+    - ansible.builtin.shell: update-alternatives --set python /usr/bin/python2.7
+    - ansible.builtin.shell: rm /usr/bin/python && ln -s /usr/bin/python2.7 /usr/bin/python
+    - set_fact:
+        ansible_python_interpreter: /usr/bin/python2.7
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == "7"
+
+- name: Copy static https://downloads.apache.org/cassandra/KEYS file to host
+  copy:
+    src: KEYS
+    dest: /tmp
+
+- name: Add an Apt keys for Cassandra
+  apt_key:
+    #url: "{{ cassandra_deb.gpgkey }}"
+    file: /tmp/KEYS
+    state: present
+  when: ansible_os_family == 'Debian'
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Install python-apt
+  ansible.builtin.shell: |
+    apt clean
+    apt autoclean
+    apt update
+    apt -y install python3-apt
+  when: ansible_os_family == 'Debian'
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Setup Cassandra apt repo
+  apt_repository:
+    repo: "{{ cassandra_deb.repo }}"
+    state: present
+  when: ansible_os_family == 'Debian'
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Install cassandra deb package
+  apt:
+    name: "{{ cassandra_deb_pkg }}"
+    state: present
+    force: yes
+  when: ansible_os_family == 'Debian'
+  notify: debian_remove_cassandra
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Set Snitch to PropertyFileSnitch
+  lineinfile:
+    path: /etc/cassandra/conf/cassandra.yaml
+    regexp: "^endpoint_snitch"
+    line: 'endpoint_snitch: PropertyFileSnitch'
+  when:
+    - "cassandra_version.startswith('4.0')"
+    - ansible_os_family == "RedHat"
+  no_log: yes
+
+- name: Set Snitch to PropertyFileSnitch
+  lineinfile:
+    path: /etc/cassandra/cassandra.yaml
+    regexp: "^endpoint_snitch"
+    line: 'endpoint_snitch: PropertyFileSnitch'
+  when:
+    - "cassandra_version.startswith('4.0')"
+    - ansible_os_family == "Debian"
+  no_log: yes
+
+- name: Add lines DC issue on startup
+  blockinfile:
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - DC Startup Bug"
+    dest: "{{ cassandra_env_file }}"
+    block: |
+      JVM_OPTS="$JVM_OPTS -Dcassandra.ignore_dc=true"
+      JVM_OPTS="$JVM_OPTS -Dcassandra.ignore_rack=true"
+
+- name: Set audit_logging_options.allow_nodetool_archive_command
+  ansible.builtin.blockinfile:
+    path: /etc/cassandra/cassandra.yaml
+    block: |
+      audit_logging_options:
+        allow_nodetool_archive_command: true
+      full_query_logging_options:
+        allow_nodetool_archive_command: true
+  when: "cassandra_version[0] | int >= 4"
+
+- name: Adjust heap size
+  lineinfile:
+    path: "{{ cassandra_env_file }}"
+    regexp: "^MAX_HEAP_SIZE="
+    line: "MAX_HEAP_SIZE=256M"
+  no_log: yes
+
+#- name: Replace default cassandra init script - RedHat 7
+#  copy:
+#    src: cassandra
+#    dest: /etc/init.d/cassandra
+#    owner: root
+#    group: root
+#    mode: 0755
+#  when: ansible_os_family == "RedHat"
+
+#- name: Replace default cassandra init script - Debian
+#  copy:
+#    src: cassandra_debian
+#    dest: /etc/init.d/cassandra
+#    owner: root
+#    group: root
+#    mode: 0755
+#  when:
+#  - ansible_os_family == "Debian"
+#  - cassandra_version[0] | int >= 4
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Start Cassandra service
+  service:
+    name: "{{ cassandra_service }}"
+    enabled: "yes"
+    state: "restarted"
+
+- name: Allow a little time for Cassandra to start listening on ports
+  wait_for:
+    port: "{{ item.port }}"
+    host: "{{ item.host }}"
+    delay: 10
+    timeout: 360
+  with_items:
+    - { "host": "0.0.0.0", "port": 9042 }
+    - { "host": "127.0.0.1", "port": 7199 }
+  register: cassandra_ports
+  ignore_errors: yes
+
+- debug:
+    var: cassandra_ports
+
+- name: Read the logfile if wait_for task timed out
+  ansible.builtin.shell: ls -lh /var/log/cassandra/ && cat /var/log/cassandra/system.log
+  when:
+    - cassandra_ports.failed is defined
+    - cassandra_ports.failed
+
+- name: End play if wait_for task failed
+  fail:
+    msg: "Cassandra failed to start. Check log output above."
+  when:
+    - cassandra_ports.failed is defined
+    - cassandra_ports.failed
+
+- name: Upgrade pip libs to 20.3.4 for py2.7
+  pip:
+    name: pip==20.3.4
+    extra_args: "--upgrade"
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == "7"
+  notify: redhat_remove_cassandra
+  register: result
+  until: result is not failed
+  retries: 3
+
+- name: Install clqshlib - bug - ImportError - No module named cqlshlib
+  ansible.builtin.shell: cp -r /usr/lib/python3.6/site-packages/cqlshlib /usr/lib/python2.7/site-packages/cqlshlib
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == "7"
+  notify: redhat_remove_cassandra
+  no_log: yes

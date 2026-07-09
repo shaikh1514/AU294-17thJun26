@@ -1,0 +1,41 @@
+eks_cluster_name: "{{ resource_prefix }}"
+eks_nodegroup_name_a: "ng-template-{{ tiny_prefix }}-a"
+eks_nodegroup_name_lt: "ng-template-{{ tiny_prefix }}-lt"
+
+# VPC CIDR allocation - randomised to avoid conflicts
+vpc_cidr: 10.{{ 256 | random(seed=resource_prefix) }}.220.0/22
+
+eks_subnets:
+  - zone: a
+    cidr: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 0) }}"
+    type: private
+  - zone: b
+    cidr: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 1) }}"
+    type: public
+
+eks_nodegroup_ami_type: "AL2_x86_64"
+
+eks_security_groups:
+  - name: "{{ eks_cluster_name }}-control-plane-sg"
+    description: "EKS Control Plane Security Group"
+    rules:
+      - group_name: "{{ eks_cluster_name }}-workers-sg"
+        group_desc: "EKS Worker Security Group"
+        ports: 443
+        proto: tcp
+    rules_egress:
+      - group_name: "{{ eks_cluster_name }}-workers-sg"
+        group_desc: "EKS Worker Security Group"
+        from_port: 1025
+        to_port: 65535
+        proto: tcp
+  - name: "{{ eks_cluster_name }}-workers-sg"
+    description: "EKS Worker Security Group"
+    rules:
+      - group_name: "{{ eks_cluster_name }}-workers-sg"
+        proto: tcp
+        from_port: 1
+        to_port: 65535
+      - group_name: "{{ eks_cluster_name }}-control-plane-sg"
+        ports: 10250
+        proto: tcp

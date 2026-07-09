@@ -1,0 +1,21 @@
+---
+  - name: generating ssh keys
+    hosts: servera
+    vars_files:
+      - vars/users_vars.yaml
+    tasks:
+      - name: creating folder
+        ansible.builtin.file:
+          path: /tmp/ssh_keys
+          state: directory
+        delegate_to: localhost
+      
+      - name: generate ssh keys
+        ansible.builtin.user:
+          name: "{{ item.name }}"
+          generate_ssh_key: true
+          ssh_key_bits: 2048
+          ssh_key_file: "/tmp/ssh_keys/{{ item['name'] }}"
+        loop: "{{ users }}"
+        delegate_to: localhost
+

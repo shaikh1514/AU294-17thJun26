@@ -1,0 +1,32 @@
+---
+# tasks file for cassandra_linux
+- name: Include vars for OS family
+  ansible.builtin.include_vars:
+    file: "{{ ansible_facts['os_family'] }}.yml"
+
+# tasks file for cassandra_install
+- name: Ensure man1 directory exists (fix Ubuntu 24.04 Java bug)
+  ansible.builtin.file:
+    path: /usr/share/man/man1
+    state: directory
+    mode: "0755"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - ansible_facts['distribution'] == 'Ubuntu'
+    - ansible_facts['distribution_major_version'] | int == 24
+
+- name: Install Cassandra Packages
+  ansible.builtin.package:
+    name: "{{ cassandra_packages }}"
+    state: present
+  retries: 3
+
+# https://issues.apache.org/jira/browse/CASSANDRA-16822?orderby=created+DESC%2C+priority+DESC%2C+updated+DESC
+- name: Install clqshlib - bug - ImportError - No module named cqlshlib
+  ansible.builtin.shell: cp -r /usr/lib/python3.6/site-packages/cqlshlib /usr/lib/python2.7/site-packages/cqlshlib
+  args:
+    creates: /usr/lib/python2.7/site-packages/cqlshlib
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_facts['distribution_major_version'] == "7"
+    - "cassandra_version.startswith('4') or cassandra_version.startswith('3')"

@@ -1,0 +1,15 @@
+---
+  - name: testing cron job
+    hosts: servera
+    tasks:
+      - name: execute cmd every 2 min
+        ansible.builtin.cron:
+          name: "testing cron module"
+          job: "echo 'this task executed at $(date)' >> /home/student/cron.txt"
+          minute: "*/2"
+          hour: "03"
+          day: "07"
+          month: "07"
+          state: present
+          user: student
+

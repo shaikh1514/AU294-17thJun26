@@ -1,0 +1,49 @@
+---
+  - name: create two partition
+    hosts: servera
+    tasks:
+      - name: create 1st partition
+        community.general.parted:
+          device: /dev/sdb
+          number: 1
+          state: present
+          label: gpt
+          part_start: 0%
+          part_end: 50%
+
+      - name: create 2nd parition
+        community.general.parted:
+          device: /dev/sdb
+          number: 2
+          state: present
+          label: gpt
+          part_start: 51%
+          part_end: 100%
+
+      - name: assign ext4 filesystem
+        community.general.filesystem:
+          fstype: ext4
+          dev: "{{ item }}"
+        loop:
+          - /dev/sdb1
+          - /dev/sdb2
+
+      - name: create mount point
+        ansible.builtin.file:
+          path: "{{ item }}"
+          state: directory
+        loop:
+          - /mnt/part1
+          - /mnt/part2
+
+      - name: mount the file system
+        ansible.posix.mount:
+          path: "{{ item.path1 }}"
+          src: "{{ item.src1 }}"
+          fstype: ext4
+          state: mounted
+        loop:
+          - path1: /mnt/part1
+            src1: /dev/sdb1
+          - path1: /mnt/part2
+            src1: /dev/sdb2

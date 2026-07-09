@@ -1,0 +1,7 @@
+---
+  collections:
+    - name: /home/student/Downloads/redhatofficial-rhel_hardening_roles-0.1.81.tar.gz
+
+    - name: community.aws
+
+    - name: git+https://github.com/ansible-collections/community.grafana.git

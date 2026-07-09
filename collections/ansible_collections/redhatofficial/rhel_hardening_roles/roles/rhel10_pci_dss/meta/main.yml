@@ -1,0 +1,25 @@
+dependencies: []
+galaxy_info:
+  author: ComplianceAsCode development team
+  description: PCI-DSS v4.0.1 Control Baseline for Red Hat Enterprise Linux 10
+  galaxy_tags:
+  - system
+  - hardening
+  - openscap
+  - ssg
+  - scap
+  - security
+  - compliance
+  - complianceascode
+  - redhatofficial
+  - redhat
+  - rhel10
+  - pcidss
+  issue_tracker_url: https://github.com/ComplianceAsCode/content/issues
+  license: BSD-3-Clause
+  min_ansible_version: 2.9
+  platforms:
+  - name: EL
+    versions:
+    - 0
+  role_name: rhel10_pci_dss

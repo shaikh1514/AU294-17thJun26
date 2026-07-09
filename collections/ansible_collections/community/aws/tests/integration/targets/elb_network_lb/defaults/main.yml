@@ -1,0 +1,14 @@
+---
+# load balancer and target group names have to be less than 32 characters
+# the 8 digit identifier at the end of resource_prefix helps determine during which test something
+# was created and allows tests to be run in parallel
+nlb_name: "nlb-{{ tiny_prefix }}"
+tg_name: "nlb-{{ tiny_prefix }}"
+tg_tcpudp_name: "nlb-tcp-udp-{{ tiny_prefix }}"
+
+# VPC CIDR allocation - randomised to avoid conflicts
+vpc_cidr: 10.{{ 256 | random(seed=resource_prefix) }}.204.0/22
+subnet_a_cidr: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 0) }}"
+subnet_b_cidr: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 1) }}"
+subnet_c_cidr: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 2) }}"
+subnet_d_cidr: "{{ vpc_cidr | ansible.utils.ipsubnet(24, 3) }}"

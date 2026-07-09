@@ -1,0 +1,13 @@
+---
+  - name: confugre job to run at specefic time
+    hosts: servera
+    tasks:
+      - name: executing task in servera
+        ansible.posix.at:
+          command: "{{ item }}"
+          count: 2
+          units: minutes
+          unique: yes
+        loop:
+          - touch /home/student/at.txt
+          - timedatectl > /home/student/at.txt

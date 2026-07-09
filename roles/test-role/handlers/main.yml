@@ -1,0 +1,5 @@
+---
+# handlers file for test-role
+  - name: role_handler
+    debug:
+      msg: This is ROLE's Handler Task

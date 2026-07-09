@@ -1,0 +1,9 @@
+time=35m
+
+cloud/aws
+
+# reason: broken
+# AWS no longer supports unencrypted Redshift clusters - tests need updating
+disabled
+
+redshift_info

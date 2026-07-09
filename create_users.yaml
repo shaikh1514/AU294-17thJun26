@@ -1,0 +1,99 @@
+---
+  - name: creating users using variable
+    hosts: appservers
+    vars_files:
+      - vars/users_vars.yaml
+      - vars/pass.yaml
+    tasks:
+      - name: create web group
+        ansible.builtin.group:
+          name: web
+          state: present
+        when: inventory_hostname is in groups['webservers']
+      - name: create db group
+        ansible.builtin.group:
+          name: db
+          state: present
+        when: inventory_hostname is in groups['dbservers']
+      - name: create admin group
+        ansible.builtin.group:
+          name: admin
+          state: present
+      - name: create user from web group
+        ansible.builtin.user:
+          name: "{{ item.name }}"
+          state: present
+          groups: "{{ item.group }}"
+          password: "{{ webpass | password_hash('sha512') }}"
+        loop: "{{ users }}"
+        when: inventory_hostname is in groups['webservers'] and item.role == 'webadmin'
+
+      - name: create user for db group
+        ansible.builtin.user:
+          name: "{{ item.name }}"
+          state: present
+          groups: "{{ item.group }}"
+          password: "{{ dbpass | password_hash('sha512') }}"
+        loop: "{{ users }}"
+        when: inventory_hostname is in groups['dbservers'] and item.role == 'dbadmin'
+
+      - name: create for admmin group
+        ansible.builtin.user:
+          name: "{{ item.name }}"
+          state: present
+          groups: "{{ item.group }}"
+          password: "{{ adminpass | password_hash('sha512') }}"
+        loop: "{{ users }}"
+        when: item.role == 'admin'
+
+      - name: add ssh keys for webadmin group
+        ansible.posix.authorized_key:
+          user: "{{ item.name }}"
+          key: "{{ lookup('file', '/tmp/ssh_keys/' + item.name + '.pub') }}"
+        loop: "{{ users }}"
+        when: inventory_hostname is in groups['webservers'] and item.role == 'webadmin'
+
+      - name: add ssh keys for dbadmin group
+        ansible.posix.authorized_key:
+          user: "{{ item.name }}"
+          key: "{{ lookup('file', '/tmp/ssh_keys/' + item.name + '.pub') }}"
+        loop: "{{ users }}"
+        when: inventory_hostname is in groups['dbservers'] and item.role == 'dbadmin'
+
+      - name: add ssh keys for admin group
+        ansible.posix.authorized_key:
+          user: "{{ item.name }}"
+          key: "{{ lookup('file', '/tmp/ssh_keys/' + item.name + '.pub') }}"
+        loop: "{{ users }}"
+        when: item.role == 'admin'
+
+      - name: confure sudo access for webadmin group
+        ansible.builtin.lineinfile:
+          path: /etc/sudoers.d/webadmin
+          state: present
+          create: yes
+          mode: 0440
+          line: "%webadmin ALL=(ALL) NOPASSWD: ALL"
+          validate: /usr/sbin/visudo -cf %s
+        when: inventory_hostname is in groups['webservers']
+
+      - name: confure sudo access for dbadmin group
+        ansible.builtin.lineinfile:
+          path: /etc/sudoers.d/dbadmin
+          state: present
+          create: yes
+          mode: 0440
+          line: "%dbadmin ALL=(ALL) NOPASSWD: ALL"
+          validate: /usr/sbin/visudo -cf %s
+        when: inventory_hostname is in groups['dbservers']
+
+      - name: confure sudo access for admin group
+        ansible.builtin.lineinfile:
+          path: /etc/sudoers.d/webadmin
+          state: present
+          create: yes
+          mode: 0440
+          line: "%admin ALL=(ALL) NOPASSWD: ALL"
+          validate: /usr/sbin/visudo -cf %s
+
+        

@@ -1,0 +1,10 @@
+---
+  - name: collecting package facts
+    hosts: serverd
+    tasks:
+      - name: collect package facts
+        ansible.builtin.package_facts:
+
+      - name: print the installed packages
+        ansible.builtin.debug:
+          var: ansible_facts['packages']['nfs-utils']

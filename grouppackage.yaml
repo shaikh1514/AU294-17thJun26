@@ -1,0 +1,8 @@
+---
+  - name: install grouup package
+    hosts: serverd
+    tasks:
+      - name: installing Development Tools
+        ansible.builtin.dnf:
+          name: "@Development Tools"
+          state: latest

@@ -1,0 +1,9 @@
+---
+
+- name: "Run old verify tests"
+  import_tasks: old_verify.yml
+  when: cassandra_version == "40x" or cassandra_version == "311x"
+
+- name: "Run tests for 4.1"
+  import_tasks: 4_1_verify_disabled.yml
+  when: cassandra_version == "41x"

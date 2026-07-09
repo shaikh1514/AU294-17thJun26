@@ -1,0 +1,5 @@
+---
+# vars file for apache
+pkg1: httpd
+pkg2: firewalld
+svc3: http
