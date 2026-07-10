@@ -1,0 +1,19 @@
+---
+  - name: creating repo
+    hosts: all
+    tasks:
+      - name: configure EX294_BASE repo
+        ansible.builtin.yum_repository:
+          name: EX294_BASE
+          description: "EX294 base software"
+          baseurl: http://content.example.com/rhel10.0/x86_64/dvd/BaseOS
+          enabled: true
+          gpgcheck: false
+
+      - name: EX294_STREAK
+        ansible.builtin.yum_repository:
+          name: EX294_STREAK
+          description: "EX294 stream software"
+          baseurl: http://content.example.com/rhel10.0/x86_64/dvd/AppStream
+          enabled: true
+          gpgcheck: false

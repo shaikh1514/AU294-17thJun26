@@ -1,0 +1,49 @@
+---
+  - name: web content directory
+    hosts: dev
+    tasks:
+      - name: installing packages
+        ansible.builtin.dnf:
+          name:
+            - httpd
+            - firewalld
+          state: latest
+
+      - name: start service
+        ansible.builtin.service:
+          name: "{{ item }}"
+          state: started
+          enabled: true
+        loop:
+          - httpd
+          - firewalld
+
+      - name: configure firewall
+        ansible.posix.firewalld:
+          service: http
+          state: enabled
+          permanent: true
+          immediate: true
+
+      - name: create webdev
+        ansible.builtin.file:
+          path: /webdev
+          state: directory
+          group: student
+          mode: '2775'
+          setype: httpd_sys_content_t
+
+      - name: create  sym link
+        ansible.builtin.file:
+          src: /webdev
+          dest: /var/www/html/webdev
+          state: link
+          setype: httpd_sys_content_t
+
+      - name: c reate index.html file
+        ansible.builtin.copy:
+          content: "Development"
+          dest: /webdev/index.html
+          setype: httpd_sys_content_t
+
+

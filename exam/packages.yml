@@ -1,0 +1,22 @@
+---
+  - name: isntalling packages
+    hosts: dev prod test
+    tasks:
+      - name: installing php and mariadb
+        ansible.builtin.dnf:
+          name:
+            - php
+            - mariadb
+          state: latest
+
+      - name: installing "RPM Development Tool"
+        ansible.builtin.dnf:
+          name: "@RPM Development Tools"
+          state: latest
+        when: inventory_hostname is in groups['dev']
+
+      - name: upgrading all packages
+        ansible.builtin.dnf:
+          name: "*"
+          state: latest
+        when: inventory_hostname is in groups['dev']

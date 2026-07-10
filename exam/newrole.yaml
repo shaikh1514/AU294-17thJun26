@@ -1,0 +1,5 @@
+---
+  - name: executing role task
+    hosts: webservers
+    roles:
+      - apache

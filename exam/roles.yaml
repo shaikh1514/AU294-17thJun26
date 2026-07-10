@@ -1,0 +1,10 @@
+---
+  - name: installing phpinfo role 
+    hosts: webservers
+    roles:
+      - phpinfo
+
+  - name: installing balancer role
+    hosts: balancers
+    roles:
+      - balancer

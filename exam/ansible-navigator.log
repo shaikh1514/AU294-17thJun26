@@ -1,0 +1,63 @@
+2026-07-09T03:52:12.619045+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' Image inspection failed, image assumed to be corrupted or missing
+2026-07-09T03:52:12.619451+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stdout: []
+
+2026-07-09T03:52:12.619514+00:00 WARNING 'ansible_navigator.image_manager.puller._log_message' stderr: Error: utility.lab.example.com:5000/ansible-automation-platform-25/ee-supported-rhel8:latest: image not known
+
+2026-07-10T02:27:59.835195+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/callback/tasks_only.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    ansible_config: |-
+    ^
+but found another document
+  in "<unicode string>", line 7, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.835642+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/inventory/gitlab_runners.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    plugin: community.general.gitlab ... 
+    ^
+but found another document
+  in "<unicode string>", line 6, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.835704+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/inventory/incus.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    plugin: community.general.incus
+    ^
+but found another document
+  in "<unicode string>", line 5, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.835732+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/inventory/linode.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    plugin: community.general.linode
+    ^
+but found another document
+  in "<unicode string>", line 5, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.835760+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/inventory/iocage.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    plugin: community.general.iocage
+    ^
+but found another document
+  in "<unicode string>", line 7, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.835786+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/inventory/nmap.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    plugin: community.general.nmap
+    ^
+but found another document
+  in "<unicode string>", line 7, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.835809+00:00 ERROR 'ansible_navigator.actions.collections._parse' /workspaces/ansible_playbook/mycollections/ansible_collections/community/general/plugins/inventory/virtualbox.py ComposerError (get_docstring): expected a single document in the stream
+  in "<unicode string>", line 3, column 1:
+    plugin: community.general.virtualbox
+    ^
+but found another document
+  in "<unicode string>", line 10, column 1:
+    ---
+    ^
+2026-07-10T02:27:59.836002+00:00 ERROR 'ansible_navigator.actions.collections._parse' ansible.posix was mounted and catalogued in the execution environment but was outside the adjacent 'collections' directory. This may cause issues outside the local development environment.
+2026-07-10T02:27:59.836092+00:00 ERROR 'ansible_navigator.actions.collections._parse' community.general was mounted and catalogued in the execution environment but was outside the adjacent 'collections' directory. This may cause issues outside the local development environment.

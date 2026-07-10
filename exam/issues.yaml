@@ -1,0 +1,21 @@
+---
+  - name: generating content
+    hosts: all
+    tasks:
+      - name: replcae the content Development
+        ansible.builtin.copy:
+          content: "Development"
+          dest: /etc/issue
+        when: inventory_hostname is in groups['dev']
+
+      - name: replcae the content test
+        ansible.builtin.copy:
+          content: "Test"
+          dest: /etc/issue
+        when: inventory_hostname is in groups['test']
+
+      - name: replcae the content Production
+        ansible.builtin.copy:
+          content: "Production"
+          dest: /etc/issue
+        when: inventory_hostname is in groups['prod']

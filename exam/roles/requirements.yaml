@@ -1,0 +1,6 @@
+---
+  - name: balancer
+    src: http://utility.lab.example.com/archives/haproxy.tar
+
+  - name: phpinfo
+    src: http://utility.lab.example.com/archives/phpinfo.tar
