@@ -1,0 +1,31 @@
+---
+- name: Manage volume groups and logical volumes
+  hosts: all
+  tasks:
+    - name: create 1st partition
+      community.general.parted:  
+        device: /dev/sdb
+        number: 1       #1st partition will created  
+        state: present
+        label: gpt #gpt disk will created
+        flags: lvm    # this will mentioned lvm flags for the device
+        part_start: 0%
+        part_end: 20%
+      when: inventory_hostname in ['node1']
+
+    - name: create 2nd partition
+      community.general.parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        label: gpt
+        flags: lvm
+        part_start: 0%
+        part_end: 40%
+      when: inventory_hostname in ['node2']
+
+    - name: create volume group in servera and serverb
+      community.general.lvg:
+        vg: research
+        pvs: /dev/sdb1
+      when: inventory_hostname == 'node1' or inventory_hostname == 'node2'

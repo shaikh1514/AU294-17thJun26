@@ -61,3 +61,5 @@ but found another document
     ^
 2026-07-10T02:27:59.836002+00:00 ERROR 'ansible_navigator.actions.collections._parse' ansible.posix was mounted and catalogued in the execution environment but was outside the adjacent 'collections' directory. This may cause issues outside the local development environment.
 2026-07-10T02:27:59.836092+00:00 ERROR 'ansible_navigator.actions.collections._parse' community.general was mounted and catalogued in the execution environment but was outside the adjacent 'collections' directory. This may cause issues outside the local development environment.
+2026-07-13T02:41:59.617932+00:00 ERROR 'ansible_navigator.actions.doc._run_runner' Error occurred while fetching doc for plugin community.general.parted: '[WARNING]: community.general.parted was not found
+'

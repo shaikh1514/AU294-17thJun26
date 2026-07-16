@@ -1,0 +1,39 @@
+---
+  - name: create user 
+    hosts: all
+    vars_files:
+      - locker.yaml
+      - user_list.yaml
+    tasks:
+      - name: create group devops
+        ansible.builtin.group:
+          name: devops
+          state: present
+        when: inventory_hostname is in groups['dev'] or inventory_hostname is in groups['test']
+      - name: create groups opsmgr
+        ansible.builtin.group:
+          name: opsmgr
+          state: present
+        when: inventory_hostname is in groups['prod']
+
+      - name: create developer user
+        ansible.builtin.user:
+          name: "{{ item.name }}"
+          state: present
+          uid: "{{ item.uid }}"
+          groups: devops
+          append: true
+          password: "{{ pw_developer | password_hash('sha512') }}"
+        loop: "{{ users }}"
+        when: (inventory_hostname is in groups['dev'] or inventory_hostname is in groups['test']) and item.job == 'developer'
+
+      - name: create manager user    
+        ansible.builtin.user:                                     
+          name: "{{ item.name }}"                                 
+          state: present   
+          uid: "{{ item.uid }}"                                   
+          groups: opsmgr
+          append: true     
+          password: "{{ pw_manager | password_hash('sha512') }}"
+        loop: "{{ users }}"
+        when: inventory_hostname is in groups['prod'] and item.job == 'manager'

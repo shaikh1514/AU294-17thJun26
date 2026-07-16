@@ -1,0 +1,17 @@
+---
+users:
+  - name: dev1
+    uid: 2001
+    job: developer
+
+  - name: ev2
+    uid: 2002
+    job: developer
+
+  - name: mg1
+    uid: 3001
+    job: manager
+
+  - name: mg2
+    uid: 3002
+    job: manager

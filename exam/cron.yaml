@@ -1,0 +1,12 @@
+---
+  - name: creating cron job
+    hosts: all
+    tasks:
+      - name: creating cron for user natasha
+        ansible.builtin.cron:
+          name: natasha job
+          user: student
+          minute: "*/2"
+          job: 'logger "EX254 in progress"'
+
+          

@@ -1,0 +1,25 @@
+---
+  - name: generate hwreport
+    hosts: all
+    tasks:
+      - name: download the file
+        ansible.builtin.get_url:
+          url: http://utility.lab.example.com/archives/hwreport.empty
+          dest: /root/hwreport.txt
+
+      - name: replace the content
+        ansible.builtin.replace:
+          regexp: "{{ item.src }}"
+          replace: "{{ item.dest }}"
+          path: /root/hwreport.txt
+        loop:
+          - src: "hostname"
+            dest: "{{ ansible_facts['hostname'] }}"
+          - src: "memory"
+            dest: "{{ ansible_facts['memtotal_mb'] }}"
+          - src: "biosversion"
+            dest: "{{ ansible_facts['bios_version'] }}"
+          - src: "sdasize"
+            dest: "{{ ansible_facts['devices']['sda']['size'] | default('none') }}"
+          - src: "sdbsize"
+            dest: "{{ ansible_facts['devices']['sdb']['size'] | default('none') }}"

@@ -1,0 +1,53 @@
+---
+  - name: c reating partition
+    hosts: all
+    ignore_errors: true
+    tasks:
+      - name: check sdb avaible or not
+        ansible.builtin.stat:
+          path: /dev/sdb
+        register: sdb_disk
+
+      - name: print sbv not available
+        ansible.builtin.debug:
+          msg: disk does not exists
+        when: sdb_disk.stat.exists == 'false'
+
+      - name: create 4gb partition
+        block:
+          - name: create 4gb paritition
+            community.general.parted:
+              device: /dev/sdb
+              number: 2
+              state: present
+              part_start: 1025MiB
+              part_end: 2548MiB
+        rescue:
+          - name: print the msg
+            ansible.builtin.debug:
+              msg: Could not create partition of that size
+
+          - name: create 3 gb partition
+            community.general.parted:
+              device: /dev/sdb
+              number: 2
+              state: present
+              part_start: 2100MiB
+              part_end: 3100MiB
+
+      - name: assign file system
+        community.general.filesystem:
+          fstype: ext4
+          dev: /dev/sdb2
+
+      - name: create mount point
+        file:
+          path: /newpart
+          state: directory
+
+      - name: mount
+        ansible.posix.mount:
+          path: /newpart
+          src: /dev/sdb2
+          fstype: ext4
+          state: mounted

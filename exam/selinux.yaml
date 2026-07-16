@@ -5,4 +5,4 @@
       selinux_policy: targeted
       selinux_state: enforcing
     roles:
-      - redhat.rhel-system-roles.selinux
+      - rhel-system-roles.selinux
